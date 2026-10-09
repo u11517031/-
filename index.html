@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>昭和字律：復古喫茶店 (Show Typing Kissaten)</title>
+    <title>昭和字律：復古喫茶店 (Prototype)</title>
     <style>
         :root {
             --bg-color: #f4ece1;
@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace, "Microsoft JhengHei", sans-serif;
+            font-family: 'Courier New', Courier, monospace, "Microsoft JhengHei";
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -50,7 +50,7 @@
 
         .game-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             background: var(--card-bg);
             border: 3px solid var(--main-color);
             border-radius: 16px;
@@ -94,29 +94,34 @@
             display: flex;
         }
 
+        /* 喫茶店模式 */
+        .cafe-stage {
+            width: 100%;
+            text-align: center;
+        }
+
         .customer-box {
             background: #e8d8c8;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
+            position: relative;
         }
 
         .order-speech {
             font-size: 1.2rem;
             color: var(--main-color);
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
+        /* 音樂模式 */
         .record-player {
-            width: 90px;
-            height: 90px;
+            width: 100px;
+            height: 100px;
             background: #222;
             border-radius: 50%;
-            border: 6px solid var(--accent-color);
+            border: 8px solid var(--accent-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,8 +134,8 @@
         }
 
         .record-center {
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
             background: var(--main-color);
             border-radius: 50%;
         }
@@ -139,8 +144,9 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* 打字區域 */
         .target-word {
-            font-size: 1.8rem;
+            font-size: 2rem;
             letter-spacing: 2px;
             margin: 15px 0;
             font-weight: bold;
@@ -156,7 +162,7 @@
         }
 
         input[type="text"] {
-            width: 85%;
+            width: 80%;
             padding: 12px;
             font-size: 1.2rem;
             border: 2px solid var(--main-color);
@@ -178,10 +184,10 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #e8d8c8;
             border-radius: 8px;
-            box-sizing: border-box;
+            margin-top: 10px;
         }
 
         .btn {
@@ -203,73 +209,79 @@
 <body>
 
     <h1>☕ 昭和字律：復古喫茶店</h1>
-    <div class="subtitle">Show Typing Kissaten — Prototype</div>
+    <div class="subtitle">Show Typing Kissaten — Prototype v0.1</div>
 
     <div class="dashboard">
         <div>💰 營業額: <span id="money">0</span> 円</div>
         <div>⭐ 正確率: <span id="accuracy">100</span>%</div>
+        <div>🎵 已擁有黑膠: <span id="record-count">0</span> 張</div>
     </div>
 
     <div class="game-container">
         <div class="tab-buttons">
-            <button class="tab-btn active" id="btn-cafe">🍮 喫茶店經營 (基礎)</button>
-            <button class="tab-btn" id="btn-music">🎷 黑膠唱片機 (進階音遊)</button>
+            <button class="tab-btn active" onclick="switchMode('cafe')">🍮 喫茶店經營 (基礎)</button>
+            <button class="tab-btn" onclick="switchMode('music')">🎷 黑膠唱片機 (進階音遊)</button>
         </div>
 
-        <!-- 模式一：經營 -->
+        <!-- 模式一：喫茶店經營 -->
         <div id="cafe-panel" class="game-panel active">
-            <div class="customer-box">
-                <div>👤 顧客：「請問有這個嗎？」</div>
-                <div class="order-speech" id="customer-order">Pudding (焦糖布丁)</div>
+            <div class="cafe-stage">
+                <div class="customer-box">
+                    <div>👤 顧客：「你好！我想點這個：」</div>
+                    <div class="order-speech" id="customer-order">Pudding</div>
+                </div>
+                <div class="target-word" id="cafe-target">
+                    <!-- 動態渲染字母 -->
+                </div>
+                <input type="text" id="cafe-input" placeholder="請在此輸入英文..." autocomplete="off" autofocus>
+                <div class="feedback" id="cafe-feedback"></div>
             </div>
-            <div class="target-word" id="cafe-target"></div>
-            <input type="text" id="cafe-input" placeholder="請在此輸入英文..." autocomplete="off" autofocus>
-            <div class="feedback" id="cafe-feedback"></div>
         </div>
 
-        <!-- 模式二：黑膠 -->
+        <!-- 模式二：黑膠音遊 -->
         <div id="music-panel" class="game-panel">
             <div id="shop-view" style="width: 100%;">
-                <p style="text-align: center; font-weight: bold;">唱片行 (請先透過經營賺取營業額)</p>
+                <p style="text-align: center;">唱片行（需用經營賺取的營業額購買黑膠）</p>
                 <div class="shop-item">
                     <div>
-                        <strong>📀 City Pop 單曲: "Plastic Love"</strong><br>
+                        <strong>📀 City Pop Single: "Plastic Love"</strong><br>
                         <small>難度：★★☆ | 價格：100 円</small>
                     </div>
-                    <button class="btn" id="buy-btn">購買黑膠</button>
+                    <button class="btn" id="buy-btn" onclick="buyRecord()">購買黑膠</button>
                 </div>
             </div>
 
             <div id="music-view" style="display: none; width: 100%; text-align: center;">
                 <div style="display: flex; justify-content: center;">
-                    <div class="record-player" id="record-player">
+                    <div class="record-player playing" id="record-player">
                         <div class="record-center"></div>
                     </div>
                 </div>
                 <div>🎵 正在播放：Plastic Love (City Pop)</div>
                 <div class="target-word" id="music-target"></div>
-                <input type="text" id="music-input" placeholder="跟著音樂節奏輸入歌詞..." autocomplete="off">
+                <input type="text" id="music-input" placeholder="跟著節奏打出歌詞..." autocomplete="off">
                 <div class="feedback" id="music-feedback"></div>
             </div>
         </div>
     </div>
 
     <script>
+        // 遊戲資料與狀態
         let money = 0;
         let totalTyped = 0;
         let correctTyped = 0;
         let hasRecord = false;
-        let audioCtx = null;
-        let bgmInterval = null;
 
+        // 喫茶店菜單 (單字/短語)
         const cafeOrders = [
-            { text: "Pudding", label: "焦糖布丁", reward: 30 },
-            { text: "Melon Soda", label: "冰淇淋蘇打", reward: 50 },
-            { text: "Black Coffee", label: "黑咖啡", reward: 40 },
-            { text: "Hot Coffee", label: "熱咖啡", reward: 40 },
-            { text: "I want a sweet Caramel Pudding please", label: "請給我一份甜布丁", reward: 120 }
+            { text: "Pudding", reward: 30 },
+            { text: "Melon Soda", reward: 50 },
+            { text: "Black Coffee", reward: 40 },
+            { text: "Hot Hot Hot Coffee", reward: 70 },
+            { text: "I want a sweet Caramel Pudding please", reward: 120 }
         ];
 
+        // 唱片歌詞 (句子)
         const lyrics = [
             "Don't worry about it",
             "I'm just playing games",
@@ -280,114 +292,37 @@
         let currentCafeIndex = 0;
         let currentMusicIndex = 0;
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
+        // 初始化
+        updateDisplay();
+        loadCafeTarget();
 
-        function playClickSound() {
-            initAudio();
-            if (!audioCtx) return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.05);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            } catch (e) {}
-        }
-
-        function playWinSound() {
-            initAudio();
-            if (!audioCtx) return;
-            try {
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.setValueAtTime(659.25, now + 0.08);
-                osc.frequency.setValueAtTime(783.99, now + 0.16);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(now + 0.3);
-            } catch (e) {}
-        }
-
-        function startBGM() {
-            initAudio();
-            if (!audioCtx || bgmInterval) return;
-            const notes = [261.63, 329.63, 392.00, 493.88, 392.00, 329.63];
-            let noteIdx = 0;
-            bgmInterval = setInterval(() => {
-                try {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.value = notes[noteIdx];
-                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
-                    noteIdx = (noteIdx + 1) % notes.length;
-                } catch (e) {}
-            }, 300);
-        }
-
-        function stopBGM() {
-            if (bgmInterval) {
-                clearInterval(bgmInterval);
-                bgmInterval = null;
-            }
-        }
-
-        // 綁定頁籤切換事件
-        document.getElementById('btn-cafe').addEventListener('click', () => switchMode('cafe'));
-        document.getElementById('btn-music').addEventListener('click', () => switchMode('music'));
-        document.getElementById('buy-btn').addEventListener('click', buyRecord);
-
+        // 切換模式
         function switchMode(mode) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.game-panel').forEach(panel => panel.classList.remove('active'));
 
             if (mode === 'cafe') {
-                document.getElementById('btn-cafe').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 document.getElementById('cafe-panel').classList.add('active');
                 document.getElementById('cafe-input').focus();
-                stopBGM();
-                document.getElementById('record-player').classList.remove('playing');
             } else {
-                document.getElementById('btn-music').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('music-panel').classList.add('active');
                 if (hasRecord) {
                     document.getElementById('music-input').focus();
-                    startBGM();
-                    document.getElementById('record-player').classList.add('playing');
                 }
             }
         }
 
+        // --- 喫茶店邏輯 ---
         function loadCafeTarget() {
-            const currentItem = cafeOrders[currentCafeIndex];
-            document.getElementById('customer-order').innerText = `"${currentItem.text}" (${currentItem.label})`;
-            renderTarget('cafe-target', currentItem.text, '');
+            const target = cafeOrders[currentCafeIndex].text;
+            document.getElementById('customer-order').innerText = `"${target}"`;
+            renderTarget('cafe-target', target, '');
             document.getElementById('cafe-input').value = '';
         }
 
         document.getElementById('cafe-input').addEventListener('input', (e) => {
-            playClickSound();
             const input = e.target.value;
             const target = cafeOrders[currentCafeIndex].text;
             
@@ -397,21 +332,21 @@
                 renderTarget('cafe-target', target, input);
                 document.getElementById('cafe-feedback').innerText = "";
                 
-                // 完全匹配時
                 if (input === target) {
-                    playWinSound();
+                    // 完成點餐
                     money += cafeOrders[currentCafeIndex].reward;
-                    document.getElementById('cafe-feedback').innerText = `✨ 製作完成！獲得 ${cafeOrders[currentCafeIndex].reward} 円`;
+                    document.getElementById('cafe-feedback').innerText = `✨ 製作完成！賺取 ${cafeOrders[currentCafeIndex].reward} 円`;
                     currentCafeIndex = (currentCafeIndex + 1) % cafeOrders.length;
                     updateDisplay();
-                    setTimeout(loadCafeTarget, 600);
+                    setTimeout(loadCafeTarget, 800);
                 }
             } else {
-                document.getElementById('cafe-feedback').innerText = "❌ 請注意大小寫與空格哦！";
+                document.getElementById('cafe-feedback').innerText = "❌ 拼寫錯誤！注意大小寫與空格";
             }
             updateDisplay();
         });
 
+        // --- 黑膠音遊邏輯 ---
         function buyRecord() {
             if (money >= 100) {
                 money -= 100;
@@ -420,10 +355,8 @@
                 document.getElementById('shop-view').style.display = 'none';
                 document.getElementById('music-view').style.display = 'block';
                 loadMusicTarget();
-                startBGM();
-                document.getElementById('record-player').classList.add('playing');
             } else {
-                alert("營業額不足！請先透過喫茶店經營賺取 100 円。");
+                alert("營業額不足！請先在喫茶店經營賺取 100 円。");
             }
         }
 
@@ -435,7 +368,6 @@
         }
 
         document.getElementById('music-input').addEventListener('input', (e) => {
-            playClickSound();
             const input = e.target.value;
             const target = lyrics[currentMusicIndex];
 
@@ -445,19 +377,19 @@
                 renderTarget('music-target', target, input);
                 
                 if (input === target) {
-                    playWinSound();
-                    money += 50;
+                    money += 50; // 音遊高額獎勵
                     document.getElementById('music-feedback').innerText = "🎶 PERFECT! 連擊加成 +50 円";
                     currentMusicIndex = (currentMusicIndex + 1) % lyrics.length;
                     updateDisplay();
                     setTimeout(loadMusicTarget, 600);
                 }
             } else {
-                document.getElementById('music-feedback').innerText = "🎵 MISS! 注意輸入字元";
+                document.getElementById('music-feedback').innerText = "🎵 MISS! 節奏打亂了";
             }
             updateDisplay();
         });
 
+        // 渲染高亮文字
         function renderTarget(elementId, target, input) {
             const matched = target.substring(0, input.length);
             const unmatched = target.substring(input.length);
@@ -465,8 +397,11 @@
                 `<span class="matched">${matched}</span><span class="unmatched">${unmatched}</span>`;
         }
 
+        // 更新 UI 數據
         function updateDisplay() {
             document.getElementById('money').innerText = money;
+            document.getElementById('record-count').innerText = hasRecord ? "1" : "0";
+            
             const acc = totalTyped === 0 ? 100 : Math.round((correctTyped / totalTyped) * 100);
             document.getElementById('accuracy').innerText = acc;
 
@@ -475,15 +410,11 @@
                 buyBtn.innerText = "已擁有";
                 buyBtn.disabled = true;
             } else if (money < 100) {
-                buyBtn.innerText = "營業額不足 (100円)";
+                buyBtn.innerText = "金幣不足 (100円)";
             } else {
                 buyBtn.innerText = "購買黑膠";
             }
         }
-
-        // 頁面初始化
-        updateDisplay();
-        loadCafeTarget();
     </script>
 </body>
 </html>
